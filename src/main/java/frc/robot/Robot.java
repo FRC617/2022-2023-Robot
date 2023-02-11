@@ -6,43 +6,38 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.CommandScheduler; 
 
-/**
- * The VM is configured to automatically run this class, and to call the functions corresponding to
- * each mode, as described in the TimedRobot documentation. If you change the name of this class or
- * the package after creating this project, you must also update the build.gradle file in the
- * project.
- */
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import edu.wpi.first.wpilibj.XboxController;
+
+// The VM runs this class automatically and calls the functions corresponding to each mode.
+// If this is renamed/refactored update it in the build.gradle file.
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
-
   private RobotContainer m_robotContainer;
 
-  /**
-   * This function is run when the robot is first started up and should be used for any
-   * initialization code.
-   */
+  //Defining DriveTrain Hardware using VictorSPX motor controllers.
+  VictorSPX leftMotorA = new VictorSPX(Constants.LEFT_MOTOR_A * -1);
+  VictorSPX leftMotorB = new VictorSPX(Constants.LEFT_MOTOR_B * -1);
+  VictorSPX rightMotorA = new VictorSPX(Constants.RIGHT_MOTOR_A);
+  VictorSPX rightMotorB = new VictorSPX(Constants.RIGHT_MOTOR_B);
+
+  //Defining the Xbox Controller
+  XboxController driverController = new XboxController(Constants.DRIVER_CONTROLLER);
+
   @Override
   public void robotInit() {
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
-    // autonomous chooser on the dashboard.
+    // Instantiate our RobotContainer.  This will perform all our button bindings
     m_robotContainer = new RobotContainer();
   }
 
-  /**
-   * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
-   * that you want ran during disabled, autonomous, teleoperated and test.
-   *
-   * <p>This runs after the mode specific periodic functions, but before LiveWindow and
-   * SmartDashboard integrated updating.
-   */
+  // The function is called every 20 ms
+  // This runs after mode specific functions, but before LiveWindow and Smart Dashboard
   @Override
   public void robotPeriodic() {
-    // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
-    // commands, running already-scheduled commands, removing finished or interrupted commands,
-    // and running subsystem periodic() methods.  This must be called from the robot's periodic
-    // block in order for anything in the Command-based framework to work.
+    // Runs the Scheduler
     CommandScheduler.getInstance().run();
   }
 
@@ -68,12 +63,11 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {}
 
+
+  // This function is called before teleopPeriodic().
   @Override
   public void teleopInit() {
-    // This makes sure that the autonomous stops running when
-    // teleop starts running. If you want the autonomous to
-    // continue until interrupted by another command, remove
-    // this line or comment it out.
+    // This stops the autonomus when the teleop begins
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
@@ -81,7 +75,24 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+
+    //Controller Input
+    double stickInput = driverController.getRawAxis(Constants.CONTROLLER_RX_AXIS);
+    double right = driverController.getRawAxis(Constants.CONTROLLER_RIGHT_TRIGGER)*1.2;
+    double left = driverController.getRawAxis(Constants.CONTROLLER_LEFT_TRIGGER)*-1.2;
+
+    //Drivetrain Logic
+    double forward = (right + left);
+    double driveLeft = forward - stickInput;
+    double driveRight = forward + stickInput;
+
+    //Sending Power to Motors
+    leftMotorA.set(ControlMode.PercentOutput, driveLeft*0.7);
+    leftMotorB.set(ControlMode.PercentOutput, driveLeft*0.7);
+    rightMotorA.set(ControlMode.PercentOutput, driveRight*0.7);
+    rightMotorB.set(ControlMode.PercentOutput, driveRight*0.7);
+  }
 
   @Override
   public void testInit() {
