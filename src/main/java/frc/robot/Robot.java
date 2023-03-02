@@ -8,46 +8,21 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler; 
 
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import edu.wpi.first.wpilibj.XboxController;
-
 // The VM runs this class automatically and calls the functions corresponding to each mode.
 // If this is renamed/refactored update it in the build.gradle file.
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
   private RobotContainer m_robotContainer;
 
-  //Defining DriveTrain Hardware using VictorSPX motor controllers.
-  VictorSPX leftMotorA = new VictorSPX(Constants.LEFT_MOTOR_A * -1);
-  VictorSPX leftMotorB = new VictorSPX(Constants.LEFT_MOTOR_B * -1);
-  VictorSPX rightMotorA = new VictorSPX(Constants.RIGHT_MOTOR_A);
-  VictorSPX rightMotorB = new VictorSPX(Constants.RIGHT_MOTOR_B);
-
-  //Defining the Xbox Controller
-  XboxController driverController = new XboxController(Constants.DRIVER_CONTROLLER);
-
-
-
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() 
   {
     //Controller Input
-    double stickInput = driverController.getRawAxis(Constants.CONTROLLER_RX_AXIS);
-    double right = driverController.getRawAxis(Constants.CONTROLLER_RIGHT_TRIGGER)*1.2;
-    double left = driverController.getRawAxis(Constants.CONTROLLER_LEFT_TRIGGER)*-1.2;
+    m_robotContainer.controllerInput();
 
-    //Drivetrain Logic
-    double forward = right + left;
-    double driveLeft = forward - stickInput;
-    double driveRight = forward + stickInput;
-
-    //Sending Power to Motors
-    leftMotorA.set(ControlMode.PercentOutput, driveLeft*0.7);
-    leftMotorB.set(ControlMode.PercentOutput, driveLeft*0.7);
-    rightMotorA.set(ControlMode.PercentOutput, driveRight*0.7);
-    rightMotorB.set(ControlMode.PercentOutput, driveRight*0.7);
+    //Drive Train logic and power
+    m_robotContainer.driveTrainLogic();
   }
 
 
@@ -56,7 +31,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() 
   {
-    // This stops the autonomus when the teleop begins
+    // This stops the autonomous when the teleop begins
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
@@ -68,10 +43,7 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() 
   {
-    leftMotorA.set(ControlMode.PercentOutput, 0);
-    leftMotorB.set(ControlMode.PercentOutput, 0);
-    rightMotorA.set(ControlMode.PercentOutput, 0);
-    rightMotorB.set(ControlMode.PercentOutput, 0);
+    m_robotContainer.motorsDisabled();
   }
 
 

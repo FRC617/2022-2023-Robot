@@ -11,6 +11,9 @@ import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import edu.wpi.first.wpilibj.XboxController;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -19,6 +22,16 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+  //Defining DriveTrain Hardware using VictorSPX motor controllers.
+  VictorSPX leftMotorFront = new VictorSPX(Constants.LEFT_MOTOR_A * -1);
+  VictorSPX leftMotorBack = new VictorSPX(Constants.LEFT_MOTOR_B * -1);
+  VictorSPX rightMotorFront = new VictorSPX(Constants.RIGHT_MOTOR_A);
+  VictorSPX rightMotorBack = new VictorSPX(Constants.RIGHT_MOTOR_B);
+
+  double stickInput;
+  double right;
+  double left;
+
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
@@ -59,5 +72,33 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
     return Autos.exampleAuto(m_exampleSubsystem);
+  }
+
+  public void controllerInput() {
+    XboxController driverController = new XboxController(Constants.DRIVER_CONTROLLER);
+
+    stickInput = driverController.getRawAxis(Constants.CONTROLLER_RX_AXIS);
+    right = driverController.getRawAxis(Constants.CONTROLLER_RIGHT_TRIGGER)*1.2;
+    left = driverController.getRawAxis(Constants.CONTROLLER_LEFT_TRIGGER)*-1.2;
+  }
+
+  public void driveTrainLogic() {
+    //Drivetrain Logic
+    double forward = right + left;
+    double driveLeft = forward - stickInput;
+    double driveRight = forward + stickInput;
+
+    //Sending Power to Motors
+    leftMotorFront.set(ControlMode.PercentOutput, driveLeft*0.7);
+    leftMotorBack.set(ControlMode.PercentOutput, driveLeft*0.7);
+    rightMotorFront.set(ControlMode.PercentOutput, driveRight*0.7);
+    rightMotorBack.set(ControlMode.PercentOutput, driveRight*0.7);
+  }
+
+  public void motorsDisabled() {
+    leftMotorFront.set(ControlMode.PercentOutput, 0);
+    leftMotorBack.set(ControlMode.PercentOutput, 0);
+    rightMotorFront.set(ControlMode.PercentOutput, 0);
+    rightMotorBack.set(ControlMode.PercentOutput, 0);
   }
 }
