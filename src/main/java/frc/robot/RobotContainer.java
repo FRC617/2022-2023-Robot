@@ -14,6 +14,10 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.BuiltInAccelerometer;
+import edu.wpi.first.wpilibj.interfaces.Accelerometer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -32,6 +36,10 @@ public class RobotContainer {
   double right;
   double left;
 
+  double prevXAccel = 0;
+  double prevYAccel = 0;
+
+  Accelerometer accelerometer = new BuiltInAccelerometer();
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
@@ -100,5 +108,37 @@ public class RobotContainer {
     leftMotorBack.set(ControlMode.PercentOutput, 0);
     rightMotorFront.set(ControlMode.PercentOutput, 0);
     rightMotorBack.set(ControlMode.PercentOutput, 0);
+  }
+
+  public void motors() {
+    double motorPowerLF = leftMotorFront.getBusVoltage();
+    double motorPowerLB = leftMotorBack.getBusVoltage();
+    double motorPowerRF = rightMotorFront.getBusVoltage();
+    double motorPowerRB = rightMotorBack.getBusVoltage();
+
+    smartBoardDisplay(motorPowerLF, "Front Left Motor");
+    smartBoardDisplay(motorPowerLB, "Front Right Motor");
+    smartBoardDisplay(motorPowerRF, "Back Left Motor");
+    smartBoardDisplay(motorPowerRB, "Back Right Motor");
+  }
+
+  public void acceleration() {
+    double xAccel = accelerometer.getX();
+    double yAccel = accelerometer.getY();
+
+    // Calculates the jerk in the X and Y directions
+    // Divides by .02 because default loop timing is 20ms
+    double xJerk = (xAccel - prevXAccel)/.02;
+    double yJerk = (yAccel - prevYAccel)/.02;
+
+    prevXAccel = xAccel;
+    prevYAccel = yAccel;
+
+    smartBoardDisplay(xJerk, "x Jerk");
+    smartBoardDisplay(yJerk, "y Jerk");
+  }
+
+  public void smartBoardDisplay(double smartBoardInput, String inputName) {
+    SmartDashboard.putNumber(inputName, smartBoardInput);
   }
 }

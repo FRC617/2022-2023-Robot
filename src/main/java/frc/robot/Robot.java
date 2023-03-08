@@ -21,8 +21,14 @@ public class Robot extends TimedRobot {
     //Controller Input
     m_robotContainer.controllerInput();
 
-    //Drive Train logic and power
+    //Drive Train Logic And Power
     m_robotContainer.driveTrainLogic();
+
+    //Display Acceleration Values
+    m_robotContainer.acceleration();
+
+    //Display Motor Voltage Values
+    m_robotContainer.motors();
   }
 
 
