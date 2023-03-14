@@ -6,10 +6,11 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.Timer;
 
 public class RobotContainer {
-    VictorSPX leftMotorFront = new VictorSPX(Constants.LEFT_MOTOR_A * -1);
-    VictorSPX leftMotorBack = new VictorSPX(Constants.LEFT_MOTOR_B * -1);
+    VictorSPX leftMotorFront = new VictorSPX(Constants.LEFT_MOTOR_A);
+    VictorSPX leftMotorBack = new VictorSPX(Constants.LEFT_MOTOR_B);
     VictorSPX rightMotorFront = new VictorSPX(Constants.RIGHT_MOTOR_A);
     VictorSPX rightMotorBack = new VictorSPX(Constants.RIGHT_MOTOR_B);
 
@@ -24,9 +25,14 @@ public class RobotContainer {
     boolean buttonB;
     boolean buttonX;
     boolean buttonY;
+    boolean buttonADeterminer = true;
+
+    int buttonLevel = 0;
     
     Accelerometer accelerometer = new BuiltInAccelerometer();
 
+    double autoStart = 0;
+    boolean goForAuto = false;
 
     //Gets Controller Inputs
     public void controllerInput() {
@@ -36,7 +42,7 @@ public class RobotContainer {
         right = driverController.getRawAxis(Constants.CONTROLLER_RIGHT_TRIGGER)*1.2;
         left = driverController.getRawAxis(Constants.CONTROLLER_LEFT_TRIGGER)*-1.2;
 
-        buttonA = driverController.getAButton();
+        buttonA = driverController.getRawButton(Constants.CONTROLLER_BUTTON_A);
         buttonB = driverController.getBButton();
         buttonX = driverController.getXButton();
         buttonY = driverController.getYButton();
@@ -44,16 +50,26 @@ public class RobotContainer {
 
 
     public void driveTrainLogic() {
+
+        leftMotorFront.setInverted(true);
+        leftMotorBack.setInverted(true);
+        rightMotorFront.setInverted(false);
+        rightMotorBack.setInverted(false);
+        
         //Drivetrain Logic
         double forward = right + left;
         double driveLeft = forward - stickInput;
         double driveRight = forward + stickInput;
 
-        int buttonLevel = 0;
 
         //Count button levels up
-        if (buttonA == true) {
+        if (buttonA == true && buttonADeterminer == true) {
             buttonLevel += 1;
+            buttonADeterminer = false;
+        }
+
+        if (buttonA == false) {
+            buttonADeterminer = true;
         }
 
         //Reset button level to 0 after 4 presses.
@@ -88,14 +104,43 @@ public class RobotContainer {
                 rightMotorBack.set(ControlMode.PercentOutput, driveRight*1);
                 break;
         }
+
+        shuffleBoardDisplay(buttonLevel, "Gear Mode");
     }
 
     //Turns Motor Power to 0
     public void motorsDisabled() {
-        leftMotorFront.set(ControlMode.PercentOutput, 0);
-        leftMotorBack.set(ControlMode.PercentOutput, 0);
-        rightMotorFront.set(ControlMode.PercentOutput, 0);
-        rightMotorBack.set(ControlMode.PercentOutput, 0);
+        leftMotorFront.setInverted(true);
+        leftMotorBack.setInverted(true);
+        rightMotorFront.setInverted(false);
+        rightMotorBack.setInverted(false);
+        
+        //Drivetrain Logic
+        double forward = right + left;
+        double driveLeft = forward - stickInput;
+        double driveRight = forward + stickInput;
+
+        leftMotorFront.set(ControlMode.PercentOutput, driveLeft*0);
+        leftMotorBack.set(ControlMode.PercentOutput, driveLeft*0);
+        rightMotorFront.set(ControlMode.PercentOutput, driveRight*0);
+        rightMotorBack.set(ControlMode.PercentOutput, driveRight*0);
+    }
+
+    public void motorsForward() {
+        leftMotorFront.setInverted(true);
+        leftMotorBack.setInverted(true);
+        rightMotorFront.setInverted(false);
+        rightMotorBack.setInverted(false);
+        
+        //Drivetrain Logic
+        double forward = right + left;
+        double driveLeft = forward - stickInput;
+        double driveRight = forward + stickInput;
+
+        leftMotorFront.set(ControlMode.PercentOutput, 0.3);
+        leftMotorBack.set(ControlMode.PercentOutput, 0.3);
+        rightMotorFront.set(ControlMode.PercentOutput, 0.3);
+        rightMotorBack.set(ControlMode.PercentOutput, 0.3);
     }
 
     //Sends Motor Data to Dashboard
@@ -132,5 +177,21 @@ public class RobotContainer {
     //Function to Display Data on ShuffleBoard 
     public void shuffleBoardDisplay(double shuffleBoardInput, String inputName) {
         SmartDashboard.putNumber(inputName, shuffleBoardInput);
+    }
+
+    public void autonomousInitialization() {
+        autoStart = Timer.getFPGATimestamp();
+        goForAuto = true;
+    }
+
+    public void autonomousDrive() {
+        double autoTimeElapsed = Timer.getFPGATimestamp() - autoStart;
+        if(goForAuto) {
+            if (autoTimeElapsed < .5) {
+                motorsForward();
+            } else {
+                motorsDisabled();
+            }
+        }
     }
 }
