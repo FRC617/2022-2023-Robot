@@ -126,21 +126,16 @@ public class RobotContainer {
         rightMotorBack.set(ControlMode.PercentOutput, driveRight*0);
     }
 
-    public void motorsForward() {
+    public void motorsForward(float input) {
         leftMotorFront.setInverted(true);
         leftMotorBack.setInverted(true);
         rightMotorFront.setInverted(false);
         rightMotorBack.setInverted(false);
-        
-        //Drivetrain Logic
-        double forward = right + left;
-        double driveLeft = forward - stickInput;
-        double driveRight = forward + stickInput;
 
-        leftMotorFront.set(ControlMode.PercentOutput, 0.3);
-        leftMotorBack.set(ControlMode.PercentOutput, 0.3);
-        rightMotorFront.set(ControlMode.PercentOutput, 0.3);
-        rightMotorBack.set(ControlMode.PercentOutput, 0.3);
+        leftMotorFront.set(ControlMode.PercentOutput, input);
+        leftMotorBack.set(ControlMode.PercentOutput, input);
+        rightMotorFront.set(ControlMode.PercentOutput, input);
+        rightMotorBack.set(ControlMode.PercentOutput, input);
     }
 
     //Sends Motor Data to Dashboard
@@ -156,6 +151,21 @@ public class RobotContainer {
         shuffleBoardDisplay(motorPowerRB, "Back Right Motor");
     }
 
+    public void motorsLeft(float input) {
+        leftMotorFront.setInverted(true);
+        leftMotorBack.setInverted(true);
+
+        leftMotorFront.set(ControlMode.PercentOutput, input);
+        leftMotorBack.set(ControlMode.PercentOutput, input);
+    }
+
+    public void motorsRight(float input) {
+        rightMotorFront.setInverted(false);
+        rightMotorBack.setInverted(false);
+
+        rightMotorFront.set(ControlMode.PercentOutput, input);
+        rightMotorBack.set(ControlMode.PercentOutput, input);
+    }
 
     public void acceleration() {
         double xAccel = accelerometer.getX();
@@ -184,14 +194,47 @@ public class RobotContainer {
         goForAuto = true;
     }
 
-    public void autonomousDrive() {
+    public void autonomousDriveTest() {
         double autoTimeElapsed = Timer.getFPGATimestamp() - autoStart;
         if(goForAuto) {
-            if (autoTimeElapsed < .5) {
-                motorsForward();
+            if (autoTimeElapsed < 1) {
+                motorsForward(0.3F);
             } else {
                 motorsDisabled();
             }
         }
+    }
+
+    public void autoForward(double input) {
+        double forwardInSecond = 3;
+        double onTime = input/forwardInSecond;
+        double autoTimeElapsed = Timer.getFPGATimestamp() - autoStart;
+        if(goForAuto) {
+            if (autoTimeElapsed <= onTime) {
+                motorsForward(0.3F);
+            } else {
+                motorsDisabled();
+            }
+        }
+    }
+
+    public void autoTurn(double input) {
+        double angleInSecond = 10;
+        double turnAngle = input/angleInSecond;
+        double autoTimeElapsed = Timer.getFPGATimestamp() - autoStart;
+        if (input > 0) {
+            if (autoTimeElapsed <= turnAngle) {
+                motorsRight(0.3F);
+            }
+        } else if (input < 0) {
+            if (autoTimeElapsed <= turnAngle) {
+                motorsLeft(0.3F);
+            }
+        }
+    }
+
+    public void autonomousTest() {
+        autoTurn(90);
+        autoForward(1);
     }
 }
