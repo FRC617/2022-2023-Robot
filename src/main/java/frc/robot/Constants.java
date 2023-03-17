@@ -20,12 +20,8 @@ public final class Constants {
   public static final int LEFT_MOTOR_B = 1;
   public static final int LEFT_MOTOR_A = 0;
 
-  //Intake PWM & Can IDs
-  public static final int INTAKE_MOTOR = 0;
-  public static final int INTAKE_BELT_MOTOR = 1;
-
-  //Shooter CAN ID
-  public static final int SHOOTER_MOTOR = 7;
+  //Arm CAN ID
+  public static final int ARM_MOTOR_A = 7;
 
   //Controller Channel
   public static final int DRIVER_CONTROLLER = 0;
