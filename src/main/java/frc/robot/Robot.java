@@ -73,6 +73,12 @@ public class Robot extends TimedRobot {
     
     //Display Motor Voltage Values
     m_robotContainer.motors();
+
+    //Moves Robot Arm Up and Down
+    m_robotContainer.armMovement();
+
+    //Activate Arm Flywheels Grabbing and Releasing
+    m_robotContainer.armWheels();
   }
 
   @Override

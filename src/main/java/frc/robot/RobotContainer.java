@@ -7,12 +7,17 @@ import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Timer;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 public class RobotContainer {
     VictorSPX leftMotorFront = new VictorSPX(Constants.LEFT_MOTOR_A);
     VictorSPX leftMotorBack = new VictorSPX(Constants.LEFT_MOTOR_B);
     VictorSPX rightMotorFront = new VictorSPX(Constants.RIGHT_MOTOR_A);
     VictorSPX rightMotorBack = new VictorSPX(Constants.RIGHT_MOTOR_B);
+
+    CANSparkMax armMotorA = new CANSparkMax(Constants.ARM_MOTOR_A, MotorType.kBrushed);
+    CANSparkMax armMotorB = new CANSparkMax(Constants.ARM_MOTOR_B, MotorType.kBrushed);
 
     double stickInput;
     double right;
@@ -26,6 +31,9 @@ public class RobotContainer {
     boolean buttonX;
     boolean buttonY;
     boolean buttonADeterminer = true;
+
+    boolean shoulderLeft;
+    boolean shoulderRight;
 
     int buttonLevel = 0;
     
@@ -42,10 +50,13 @@ public class RobotContainer {
         right = driverController.getRawAxis(Constants.CONTROLLER_RIGHT_TRIGGER)*1.2;
         left = driverController.getRawAxis(Constants.CONTROLLER_LEFT_TRIGGER)*-1.2;
 
+        shoulderLeft = driverController.getRawButton(Constants.CONTROLLER_SHOULDER_LEFT);
+        shoulderRight = driverController.getRawButton(Constants.CONTROLLER_SHOULDER_RIGHT);
+
         buttonA = driverController.getRawButton(Constants.CONTROLLER_BUTTON_A);
-        buttonB = driverController.getBButton();
-        buttonX = driverController.getXButton();
-        buttonY = driverController.getYButton();
+        buttonB = driverController.getRawButton(Constants.CONTROLLER_BUTTON_B);
+        buttonX = driverController.getRawButton(Constants.CONTROLLER_BUTTON_X);
+        buttonY = driverController.getRawButton(Constants.CONTROLLER_BUTTON_Y);
     }
 
 
@@ -106,6 +117,26 @@ public class RobotContainer {
         }
 
         shuffleBoardDisplay(buttonLevel, "Gear Mode");
+    }
+
+    public void armMovement() {
+        if (shoulderLeft) {
+            armMotorA.set(-0.5);
+        }
+
+        if (shoulderRight) {
+            armMotorA.set(0.5);
+        }
+    }
+
+    public void armWheels() {
+        if (buttonX) {
+            armMotorB.set(1.0);
+        }
+
+        if (buttonY) {
+            armMotorB.set(-1.0);
+        }
     }
 
     //Turns Motor Power to 0

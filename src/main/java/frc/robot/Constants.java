@@ -22,6 +22,7 @@ public final class Constants {
 
   //Arm CAN ID
   public static final int ARM_MOTOR_A = 7;
+  public static final int ARM_MOTOR_B = 8;
 
   //Controller Channel
   public static final int DRIVER_CONTROLLER = 0;
