@@ -2,6 +2,7 @@ package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.ControlMode;
+
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
@@ -84,7 +85,7 @@ public class RobotContainer {
         }
 
         //Reset button level to 0 after 4 presses.
-        if (buttonLevel >= 4) {
+        if (buttonLevel >= 2) {
             buttonLevel = 0;
         }
     
@@ -103,10 +104,10 @@ public class RobotContainer {
                 rightMotorBack.set(ControlMode.PercentOutput, driveRight*0.3);
                 break;
             case 2 :
-                leftMotorFront.set(ControlMode.PercentOutput, driveLeft*0);
-                leftMotorBack.set(ControlMode.PercentOutput, driveLeft*0);
-                rightMotorFront.set(ControlMode.PercentOutput, driveRight*0);
-                rightMotorBack.set(ControlMode.PercentOutput, driveRight*0);
+                leftMotorFront.set(ControlMode.PercentOutput, driveLeft*0.3);
+                leftMotorBack.set(ControlMode.PercentOutput, driveLeft*0.3);
+                rightMotorFront.set(ControlMode.PercentOutput, driveRight*0.3);
+                rightMotorBack.set(ControlMode.PercentOutput, driveRight*0.3);
                 break;
             case 3 :
                 leftMotorFront.set(ControlMode.PercentOutput, driveLeft*1);
@@ -121,11 +122,13 @@ public class RobotContainer {
 
     public void armMovement() {
         if (shoulderLeft) {
-            armMotorA.set(-0.5);
+            armMotorA.set(-0.2);
         }
-
-        if (shoulderRight) {
-            armMotorA.set(0.5);
+        else if (shoulderRight) {
+            armMotorA.set(0.2);
+        }
+        else{
+            armMotorA.set(0);
         }
     }
 
@@ -133,9 +136,11 @@ public class RobotContainer {
         if (buttonX) {
             armMotorB.set(1.0);
         }
-
-        if (buttonY) {
+        else if (buttonY) {
             armMotorB.set(-1.0);
+        }
+        else {
+            armMotorB.set(0);
         }
     }
 
@@ -221,51 +226,95 @@ public class RobotContainer {
     }
 
     public void autonomousInitialization() {
-        autoStart = Timer.getFPGATimestamp();
-        goForAuto = true;
+         autoStart = Timer.getFPGATimestamp();
+         goForAuto = true;
     }
 
-    public void autonomousDriveTest() {
-        double autoTimeElapsed = Timer.getFPGATimestamp() - autoStart;
-        if(goForAuto) {
-            if (autoTimeElapsed < 1) {
-                motorsForward(0.3F);
-            } else {
-                motorsDisabled();
-            }
-        }
-    }
+    //public void autonomousDriveTest() {
+    //     double autoTimeElapsed = Timer.getFPGATimestamp() - autoStart;
+    //     if(goForAuto) {
+    //         if (autoTimeElapsed < 1) {
+    //             motorsForward(0.3F);
+    //         } else {
+    //             motorsDisabled();
+    //         }
+    //     }
+    // }
 
-    public void autoForward(double input) {
-        double forwardInSecond = 3;
-        double onTime = input/forwardInSecond;
-        double autoTimeElapsed = Timer.getFPGATimestamp() - autoStart;
-        if(goForAuto) {
-            if (autoTimeElapsed <= onTime) {
-                motorsForward(0.3F);
-            } else {
-                motorsDisabled();
-            }
-        }
-    }
+    //public void autoForward(double input) {
+    //     double forwardInSecond = 3;
+    //     double onTime = input/forwardInSecond;
+    //     double autoTimeElapsed = Timer.getFPGATimestamp() - autoStart;
+    //     if(goForAuto) {
+    //         if (autoTimeElapsed <= onTime) {
+    //             motorsForward(0.2F);
+    //         } else {
+    //             motorsDisabled();
+    //         }
+    //     }
+    // }
 
-    public void autoTurn(double input) {
-        double angleInSecond = 10;
-        double turnAngle = input/angleInSecond;
-        double autoTimeElapsed = Timer.getFPGATimestamp() - autoStart;
-        if (input > 0) {
-            if (autoTimeElapsed <= turnAngle) {
-                motorsRight(0.3F);
-            }
-        } else if (input < 0) {
-            if (autoTimeElapsed <= turnAngle) {
-                motorsLeft(0.3F);
-            }
-        }
-    }
+    //public void autoTurn(double input) {
+    //     double angleInSecond = 10;
+    //     double turnAngle = input/angleInSecond;
+    //     double autoTimeElapsed = Timer.getFPGATimestamp() - autoStart;
+    //     if (input > 0) {
+    //         if (autoTimeElapsed <= turnAngle) {
+    //             motorsRight(0.2F);
+    //         }
+    //     } else if (input < 0) {
+    //         if (autoTimeElapsed <= turnAngle) {
+    //             motorsLeft(0.2F);
+    //         }
+    //     }
+    // }
 
     public void autonomousTest() {
-        autoTurn(90);
-        autoForward(1);
+    //     autoForward(3);
+    //     autoForward(-6);
+    // }
+        double autoTimeElapsed = Timer.getFPGATimestamp() - autoStart;
+        if(goForAuto){
+        //series of timed events making up the flow of auto
+            if(autoTimeElapsed < 1){
+                //spit out the ball for three seconds
+                armMotorA.set(0);
+                armMotorB.set(0);
+            }
+            else if(autoTimeElapsed < 2){
+                armMotorA.set(0);
+                armMotorB.set(0);
+            }else if(autoTimeElapsed < 2.5){
+                //stop spitting out the ball and drive backwards *slowly* for three seconds
+                armMotorA.set(0);
+                armMotorB.set(0);
+                leftMotorFront.set(ControlMode.PercentOutput,-0.3);
+                leftMotorBack.set(ControlMode.PercentOutput,-0.3);
+                rightMotorFront.set(ControlMode.PercentOutput,-0.3);
+                rightMotorBack.set(ControlMode.PercentOutput,-0.3);
+            }else if(autoTimeElapsed < 3){
+                armMotorA.set(0);
+                armMotorB.set(0);
+                leftMotorFront.set(ControlMode.PercentOutput,0.0);
+                leftMotorBack.set(ControlMode.PercentOutput,0.0);
+                rightMotorFront.set(ControlMode.PercentOutput,0.0);
+                rightMotorBack.set(ControlMode.PercentOutput,0.0);
+            }else if(autoTimeElapsed < 5){
+                //do nothing for the rest of auto
+                armMotorA.set(0);
+                armMotorB.set(0);
+                leftMotorFront.set(ControlMode.PercentOutput,0.5);
+                leftMotorBack.set(ControlMode.PercentOutput,0.5);
+                rightMotorFront.set(ControlMode.PercentOutput,0.5);
+                rightMotorBack.set(ControlMode.PercentOutput,0.5);
+            }else{
+                armMotorA.set(0);
+                armMotorB.set(0);
+                leftMotorFront.set(ControlMode.PercentOutput,0.0);
+                leftMotorBack.set(ControlMode.PercentOutput,0.0);
+                rightMotorFront.set(ControlMode.PercentOutput,0.0);
+                rightMotorBack.set(ControlMode.PercentOutput,0.0);
+            }
+        }   
     }
 }
