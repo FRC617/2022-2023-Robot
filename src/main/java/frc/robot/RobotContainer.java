@@ -85,7 +85,7 @@ public class RobotContainer {
         }
 
         //Reset button level to 0 after 4 presses.
-        if (buttonLevel >= 2) {
+        if (buttonLevel >= 3) {
             buttonLevel = 0;
         }
     
@@ -104,10 +104,10 @@ public class RobotContainer {
                 rightMotorBack.set(ControlMode.PercentOutput, driveRight*0.3);
                 break;
             case 2 :
-                leftMotorFront.set(ControlMode.PercentOutput, driveLeft*0.3);
-                leftMotorBack.set(ControlMode.PercentOutput, driveLeft*0.3);
-                rightMotorFront.set(ControlMode.PercentOutput, driveRight*0.3);
-                rightMotorBack.set(ControlMode.PercentOutput, driveRight*0.3);
+                leftMotorFront.set(ControlMode.PercentOutput, driveLeft*1);
+                leftMotorBack.set(ControlMode.PercentOutput, driveLeft*1);
+                rightMotorFront.set(ControlMode.PercentOutput, driveRight*1);
+                rightMotorBack.set(ControlMode.PercentOutput, driveRight*1);
                 break;
             case 3 :
                 leftMotorFront.set(ControlMode.PercentOutput, driveLeft*1);
@@ -284,7 +284,7 @@ public class RobotContainer {
             else if(autoTimeElapsed < 2){
                 armMotorA.set(0);
                 armMotorB.set(0);
-            }else if(autoTimeElapsed < 2.5){
+            }else if(autoTimeElapsed < 3){
                 //stop spitting out the ball and drive backwards *slowly* for three seconds
                 armMotorA.set(0);
                 armMotorB.set(0);
@@ -292,21 +292,21 @@ public class RobotContainer {
                 leftMotorBack.set(ControlMode.PercentOutput,-0.3);
                 rightMotorFront.set(ControlMode.PercentOutput,-0.3);
                 rightMotorBack.set(ControlMode.PercentOutput,-0.3);
-            }else if(autoTimeElapsed < 3){
-                armMotorA.set(0);
-                armMotorB.set(0);
-                leftMotorFront.set(ControlMode.PercentOutput,0.0);
-                leftMotorBack.set(ControlMode.PercentOutput,0.0);
-                rightMotorFront.set(ControlMode.PercentOutput,0.0);
-                rightMotorBack.set(ControlMode.PercentOutput,0.0);
+            // }else if(autoTimeElapsed < 3){
+            //     armMotorA.set(0);
+            //     armMotorB.set(0);
+            //     leftMotorFront.set(ControlMode.PercentOutput,0.0);
+            //     leftMotorBack.set(ControlMode.PercentOutput,0.0);
+            //     rightMotorFront.set(ControlMode.PercentOutput,0.0);
+            //     rightMotorBack.set(ControlMode.PercentOutput,0.0);
             }else if(autoTimeElapsed < 5){
                 //do nothing for the rest of auto
-                armMotorA.set(0);
+                armMotorA.set(0); 
                 armMotorB.set(0);
-                leftMotorFront.set(ControlMode.PercentOutput,0.5);
-                leftMotorBack.set(ControlMode.PercentOutput,0.5);
-                rightMotorFront.set(ControlMode.PercentOutput,0.5);
-                rightMotorBack.set(ControlMode.PercentOutput,0.5);
+                leftMotorFront.set(ControlMode.PercentOutput,0.3);
+                leftMotorBack.set(ControlMode.PercentOutput,0.3);
+                rightMotorFront.set(ControlMode.PercentOutput,0.3);
+                rightMotorBack.set(ControlMode.PercentOutput,0.3);
             }else{
                 armMotorA.set(0);
                 armMotorB.set(0);
