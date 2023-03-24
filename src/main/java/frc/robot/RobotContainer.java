@@ -230,49 +230,60 @@ public class RobotContainer {
          goForAuto = true;
     }
 
-    //public void autonomousDriveTest() {
-    //     double autoTimeElapsed = Timer.getFPGATimestamp() - autoStart;
-    //     if(goForAuto) {
-    //         if (autoTimeElapsed < 1) {
-    //             motorsForward(0.3F);
-    //         } else {
-    //             motorsDisabled();
-    //         }
-    //     }
-    // }
+    public void autonomousForward(double time, double strength) {
+        double autoTimeElapsed = Timer.getFPGATimestamp() - autoStart;
+        if (goForAuto) {
+            if (autoTimeElapsed < time) {
+                leftMotorFront.set(ControlMode.PercentOutput,strength);
+                leftMotorBack.set(ControlMode.PercentOutput,strength);
+                rightMotorFront.set(ControlMode.PercentOutput,strength);
+                rightMotorBack.set(ControlMode.PercentOutput,strength);
+            } else {
+                leftMotorFront.set(ControlMode.PercentOutput,0);
+                leftMotorBack.set(ControlMode.PercentOutput,0);
+                rightMotorFront.set(ControlMode.PercentOutput,0);
+                rightMotorBack.set(ControlMode.PercentOutput,0);
+            }
+        }
+    }
 
-    //public void autoForward(double input) {
-    //     double forwardInSecond = 3;
-    //     double onTime = input/forwardInSecond;
-    //     double autoTimeElapsed = Timer.getFPGATimestamp() - autoStart;
-    //     if(goForAuto) {
-    //         if (autoTimeElapsed <= onTime) {
-    //             motorsForward(0.2F);
-    //         } else {
-    //             motorsDisabled();
-    //         }
-    //     }
-    // }
+    public void autonomousTurn(double time, String direction) {
+        double autoTimeElapsed = Timer.getFPGATimestamp() - autoStart;
+        if (goForAuto) {
+            if (autoTimeElapsed > time && direction == "right") {
+                leftMotorFront.set(ControlMode.PercentOutput,0.2);
+                leftMotorBack.set(ControlMode.PercentOutput,0.2);
+            } else if (autoTimeElapsed > time && direction == "left") {
+                rightMotorFront.set(ControlMode.PercentOutput,0.2);
+                rightMotorBack.set(ControlMode.PercentOutput,0.2);
+            } else {
+                leftMotorFront.set(ControlMode.PercentOutput,0);
+                leftMotorBack.set(ControlMode.PercentOutput,0);
+                rightMotorFront.set(ControlMode.PercentOutput,0);
+                rightMotorBack.set(ControlMode.PercentOutput,0);
+            }
+        }
+    }
 
-    //public void autoTurn(double input) {
-    //     double angleInSecond = 10;
-    //     double turnAngle = input/angleInSecond;
-    //     double autoTimeElapsed = Timer.getFPGATimestamp() - autoStart;
-    //     if (input > 0) {
-    //         if (autoTimeElapsed <= turnAngle) {
-    //             motorsRight(0.2F);
-    //         }
-    //     } else if (input < 0) {
-    //         if (autoTimeElapsed <= turnAngle) {
-    //             motorsLeft(0.2F);
-    //         }
-    //     }
-    // }
+    public void autonomousCancel() {
+        if (goForAuto) {
+            leftMotorFront.set(ControlMode.PercentOutput,0);
+            leftMotorBack.set(ControlMode.PercentOutput,0);
+            rightMotorFront.set(ControlMode.PercentOutput,0);
+            rightMotorBack.set(ControlMode.PercentOutput,0);
+        }
+    }
 
     public void autonomousTest() {
-    //     autoForward(3);
-    //     autoForward(-6);
-    // }
+        if (goForAuto) {
+            autonomousForward(1 , 0.2);
+            autonomousCancel();
+            autonomousTurn(1, "left");
+            autonomousCancel();
+        }
+    }
+
+    public void autonomousTestOld() {
         double autoTimeElapsed = Timer.getFPGATimestamp() - autoStart;
         if(goForAuto){
         //series of timed events making up the flow of auto
