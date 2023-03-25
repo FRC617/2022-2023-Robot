@@ -122,25 +122,27 @@ public class RobotContainer {
 
     public void armMovement() {
         if (shoulderLeft) {
-            armMotorA.set(-0.2);
+            armMotorB.set(-0.2);
         }
+
+        
         else if (shoulderRight) {
-            armMotorA.set(0.2);
+            armMotorB.set(0.2);
         }
         else{
-            armMotorA.set(0);
+            armMotorB.set(0);
         }
     }
 
     public void armWheels() {
         if (buttonX) {
-            armMotorB.set(1.0);
+            armMotorA.set(1.0);
         }
         else if (buttonY) {
-            armMotorB.set(-1.0);
+            armMotorA.set(-1.0);
         }
         else {
-            armMotorB.set(0);
+            armMotorA.set(0);
         }
     }
 
