@@ -26,7 +26,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() 
   {
-    CameraServer.startAutomaticCapture();
+    // CameraServer.startAutomaticCapture();
     // Instantiate our RobotContainer.  This will perform all our button bindings
     m_robotContainer = new RobotContainer();
   }
@@ -47,7 +47,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() 
   {
-    m_robotContainer.autonomousTest();
+    m_robotContainer.autonomousTestOldWithCharge();
   }
 
   @Override
